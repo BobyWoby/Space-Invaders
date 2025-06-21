@@ -1,4 +1,5 @@
 #include "Game.h"
+#include "Enemy.h"
 #include "SDL3/SDL_events.h"
 #include "SDL3/SDL_keycode.h"
 #include "imgui.h"
@@ -28,6 +29,22 @@ void Game::processEvents(SDL_Event *event){
             case SDLK_SPACE:
                 player.shoot(entities);
                 break;
+        }
+    }
+}
+void Game::detectCollisions(){
+    //detect other collisions
+
+    // delete if the entity is at a wall (unless wall collision is turned off)
+    for(int i = entities.size() - 1; i >= 0; i--){
+        auto entity  = entities.at(i);
+        for(int j = entities.size()-1; j>=0;j--){
+            if(i == j) continue;
+        }
+        entity->move(deltaTime);
+        if(entity->hp <=  0 || (entity->wallCollision && entity->atWall(windowWidth, windowHeight))){
+            delete entity;
+            entities.erase(entities.begin() + i);
         }
     }
 }
@@ -75,15 +92,8 @@ void Game::update()
         processEvents(&event);
     }
     // update physics and stuff here
-
-    for(int i = entities.size() - 1; i >= 0; i--){
-        auto entity  = entities.at(i);
-        entity->move(deltaTime);
-        if(entity->atWall(windowWidth, windowHeight)){
-            delete entity;
-            entities.erase(entities.begin() + i);
-        }
-    }
+    
+    detectCollisions();
     
     SDL_SetRenderDrawColor(renderer, 0, 0, 0 ,255);
     SDL_RenderClear(renderer);
@@ -108,6 +118,9 @@ Game::Game(){
     SDL_ShowWindow(window);
     initImGui();
     player = Player(renderer, 1000.0);
+    for(int i = 0 ; i <  enemyCount;  i++){
+        entities.push_back(new Enemy());
+    }
 }
 
 // ImGui Stuff Here

@@ -45,7 +45,6 @@ void Player::render(SDL_Renderer *renderer) {
 }
 
 void Player::shoot(std::vector<Entity *> &entities){
-    
     for(int i = 0; i < numBullets; i++){
         int xOffset = 2 * (i - (int)(numBullets / 2)) * Bullet::bulletWidth;
         Bullet *newBullet  = new Bullet(x + xOffset + this->w / 2 - Bullet::bulletWidth / 2 , y, bulletSpeed);

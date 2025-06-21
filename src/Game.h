@@ -64,6 +64,7 @@ class Game{
 
         void update();
         void render();
+        void detectCollisions();
         void entityWindow();
 
         void initImGui();

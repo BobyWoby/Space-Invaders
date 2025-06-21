@@ -8,6 +8,9 @@ public:
     float damage = 0; 
     float speed = 1000.0;
     float x, y, w, h; // Bounding box, x and y are the top left
+    bool wallCollision = true;
+    bool damagesPlayer = false;
+    double accumulatingTime = 0;
 
     bool detectCollision(Entity &other);
     bool atWall(int windowWidth, int windowHeight);
