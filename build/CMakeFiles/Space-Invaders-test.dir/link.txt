@@ -1,0 +1,1 @@
+/usr/bin/c++ -Wl,--dependency-file=CMakeFiles/Space-Invaders-test.dir/link.d "CMakeFiles/Space-Invaders-test.dir/main-test.cpp.o" -o Space-Invaders-test
