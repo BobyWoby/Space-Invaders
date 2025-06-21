@@ -1,6 +1,7 @@
 #include "Entity.h"
 #include "SDL3/SDL_render.h"
 #include "Bullet.h"
+#include <memory>
 #include <vector>
 
 class Player : public Entity {
@@ -18,5 +19,5 @@ class Player : public Entity {
         inline void move(float dt) override {};
         void loadImage(SDL_Renderer *renderer);
 
-        void shoot(std::vector<Entity> &entities);
+        void shoot(std::vector<Entity *> &entities);
 };

@@ -1,4 +1,5 @@
 #pragma once
+#include "SDL3/SDL_log.h"
 #include "SDL3/SDL_render.h"
 
 class Entity{
@@ -9,6 +10,7 @@ public:
     float x, y, w, h; // Bounding box, x and y are the top left
 
     bool detectCollision(Entity &other);
+    bool atWall(int windowWidth, int windowHeight);
     virtual void move(float dt){};
-    virtual void render(SDL_Renderer *renderer){};
+    virtual void render(SDL_Renderer *renderer){SDL_Log("Default Entity render called");};
 };

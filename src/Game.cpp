@@ -25,6 +25,9 @@ void Game::processEvents(SDL_Event *event){
             case SDLK_D:
                 player.move(deltaTime, false);
                 break;
+            case SDLK_SPACE:
+                player.shoot(entities);
+                break;
         }
     }
 }
@@ -73,17 +76,24 @@ void Game::update()
     }
     // update physics and stuff here
 
-    for(auto entity : entities){
-        entity.move(deltaTime);
+    for(int i = entities.size() - 1; i >= 0; i--){
+        auto entity  = entities.at(i);
+        entity->move(deltaTime);
+        if(entity->atWall(windowWidth, windowHeight)){
+            delete entity;
+            entities.erase(entities.begin() + i);
+        }
     }
     
     SDL_SetRenderDrawColor(renderer, 0, 0, 0 ,255);
     SDL_RenderClear(renderer);
     // render other stuff here
-    player.render(renderer);
     for(auto entity : entities){
-        entity.render(renderer);
+        entity->render(renderer);
     }
+
+    player.render(renderer);
+
     render();
     // update the lastTick
     lastTick = now;
@@ -135,7 +145,7 @@ void Game::entityWindow(){
 
             ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
 
-            ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+            ImGui::Text("Number of NPCs: %zu", entities.size());               // Display some text (you can use a format strings too)
             ImGui::Checkbox("Demo Window", &showDemo);      // Edit bools storing our window open/close state
             ImGui::Checkbox("Another Window", &showOtherWindow);
 

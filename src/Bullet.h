@@ -5,6 +5,7 @@ class Bullet : public Entity{
     public:
         static float bulletWidth, bulletHeight; // set the bulletWidth and Height before everything else
         bool up = true;
+        SDL_Texture *tex;
 
 
 
@@ -15,4 +16,5 @@ class Bullet : public Entity{
 
         void render(SDL_Renderer *renderer) override;
         void move(float dt) override;
+        void loadImage(SDL_Renderer *renderer);
 };

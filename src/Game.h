@@ -8,6 +8,7 @@
 #include "imgui_impl_sdl3.h"
 #include "imgui_impl_sdlrenderer3.h"
 #include <ctime>
+#include <memory>
 #include <vector>
 
 #include "Player.h"
@@ -24,6 +25,9 @@ class Game{
             SDL_DestroyRenderer(renderer);
             SDL_DestroyWindow(window);
             SDL_Quit();
+            for(auto entity : entities){
+                delete entity;
+            }
             delete instance;
         }
 
@@ -42,7 +46,7 @@ class Game{
         int enemyCount = 1;
         Player player;
         float bulW, bulH; // the bullet dimensions
-        std::vector<Entity> entities; // non-player entities
+        std::vector<Entity *> entities; // non-player entities
 
         // Physics
         double deltaTime = 0;

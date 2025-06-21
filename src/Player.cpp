@@ -7,6 +7,7 @@
 #include "SDL3/SDL_surface.h"
 #include "SDL3_image/SDL_image.h"
 #include <cstddef>
+#include <memory>
 
 Player::Player(SDL_Renderer *renderer, float playerSpeed){
     this->x = 1000;
@@ -28,8 +29,8 @@ void Player::loadImage(SDL_Renderer *renderer){
     if(tex == nullptr){
         SDL_Log("Error loading texture: %s", SDL_GetError());
     }
-    w = surface->w;
-    h = surface->h;
+    w = surface->w * 2;
+    h = surface->h * 2;
     SDL_DestroySurface(surface);
 }
 
@@ -43,11 +44,11 @@ void Player::render(SDL_Renderer *renderer) {
     SDL_RenderTexture( renderer, tex, nullptr, &dstRect );
 }
 
-void Player::shoot(std::vector<Entity> &entities){
+void Player::shoot(std::vector<Entity *> &entities){
     
     for(int i = 0; i < numBullets; i++){
         int xOffset = 2 * (i - (int)(numBullets / 2)) * Bullet::bulletWidth;
-        Bullet newBullet = Bullet(x + xOffset, y, bulletSpeed);
+        Bullet *newBullet  = new Bullet(x + xOffset + this->w / 2 - Bullet::bulletWidth / 2 , y, bulletSpeed);
         entities.push_back(newBullet);
     }
 }
