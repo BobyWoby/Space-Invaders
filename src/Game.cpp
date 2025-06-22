@@ -21,13 +21,16 @@ void Game::processEvents(SDL_Event *event){
                 running = false;
                 break;
             case SDLK_A:
-                player.move(deltaTime, true);
+                if(state == RUNNING)
+                    player.move(deltaTime, true);
                 break;
             case SDLK_D:
-                player.move(deltaTime, false);
+                if(state == RUNNING)
+                    player.move(deltaTime, false);
                 break;
             case SDLK_SPACE:
-                player.shoot(entities);
+                if(state == RUNNING)
+                    player.shoot(entities);
                 break;
         }
     }
@@ -98,8 +101,8 @@ void Game::update()
         ImGui_ImplSDL3_ProcessEvent(&event);
         processEvents(&event);
     }
+
     // update physics and stuff here
-    
     detectCollisions();
     
     SDL_SetRenderDrawColor(renderer, 0, 0, 0 ,255);
@@ -130,7 +133,7 @@ Game::Game(){
     SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
     SDL_ShowWindow(window);
     initImGui();
-    player = Player(renderer, 1000.0);
+    player = Player(renderer, 5000.0);
     reset();
 }
 
@@ -140,10 +143,12 @@ void Game::reset(){
     }
     entities.clear();
     for(int i = 0 ; i < enemyCount;  i++){
-        float x = (windowWidth /  2 + spacing * (i - enemyCount / 2)) % (10 * spacing);
+        float x = 300 + (windowWidth /  2 + spacing * (i % 10 - enemyCount / 2)) % (10 * spacing);
         float y = 100 + spacing * (int)(i / 10);
         entities.push_back(new Enemy(x, y));
     }
+    player.hp = 100;
+    state = RUNNING;
 }
 
 // ImGui Stuff Here
@@ -179,12 +184,12 @@ void Game::entityWindow(){
     static float f = 0.0f;
     static int counter = 0;
 
-    ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+    ImGui::Begin("Dev Panel");                          // Create a window called "Hello, world!" and append into it.
 
     ImGui::Text("Player HP: %f", player.hp);               // Display some text (you can use a format strings too)
     ImGui::Text("Number of NPCs: %zu", entities.size());               // Display some text (you can use a format strings too)
-    ImGui::Checkbox("Demo Window", &showDemo);      // Edit bools storing our window open/close state
-    ImGui::Checkbox("Another Window", &showOtherWindow);
+    // ImGui::Checkbox("Demo Window", &showDemo);      // Edit bools storing our window open/close state
+    // ImGui::Checkbox("Another Window", &showOtherWindow);
 
     ImGui::InputInt("Number of enemies", &enemyCount);
     ImGui::SliderFloat("Player Speed", &player.speed, 0.0f, 10000.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
@@ -193,8 +198,8 @@ void Game::entityWindow(){
 
     if (ImGui::Button("Reset"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
         reset();
-    ImGui::SameLine();
-    ImGui::Text("counter = %d", counter);
+    // ImGui::SameLine();
+    // ImGui::Text("counter = %d", counter);
 
     ImGui::Text("deltaTime: %f", deltaTime);
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io->Framerate, io->Framerate);
