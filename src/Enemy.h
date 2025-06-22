@@ -7,6 +7,7 @@ class Enemy : public Entity{
     public:
         float iX, iY;
         Enemy();
+        Enemy(float x, float y);
         ~Enemy();
         void render(SDL_Renderer *renderer) override;
         void move(float dt) override;

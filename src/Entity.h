@@ -2,8 +2,15 @@
 #include "SDL3/SDL_log.h"
 #include "SDL3/SDL_render.h"
 
+typedef enum EntityType{
+    NONE,
+    PLAYER,
+    PROJECTILE,
+    ENEMY
+} EntityType;
 class Entity{
 public:
+    EntityType id = NONE;
     float hp = 100; 
     float damage = 0; 
     float speed = 1000.0;

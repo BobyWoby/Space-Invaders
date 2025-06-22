@@ -10,24 +10,30 @@ float Bullet::bulletWidth = 10;
 float Bullet::bulletHeight = 100;
 
 Bullet::Bullet(){
-        this->w = bulletWidth;
+    id = PROJECTILE;
+    this->w = bulletWidth;
     this->h = bulletHeight;
+    this->hp =  1;
 }
 
 Bullet::Bullet(float x, float y){
+    id = PROJECTILE;
     this->x = x;
     this->y = y;
     this->damage = 20;
+    this->hp =  1;
     this->w = bulletWidth;
     this->h = bulletHeight;
 
 }
 
 Bullet::Bullet(float x, float y, float s){
+    id = PROJECTILE;
     this->x = x;
     this->y = y;
     this->speed = s;
     this->damage = 20;
+    this->hp =  1;
     this->w = bulletWidth;
     this->h = bulletHeight;
 }

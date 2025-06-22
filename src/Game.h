@@ -13,25 +13,18 @@
 
 #include "Player.h"
 
+typedef enum GameState {
+    RUNNING,
+    WIN,
+    LOSE,
+} GameState;
+
 class Game{
     protected:
         Game();
     public:
-        inline ~Game(){
-            ImGui_ImplSDLRenderer3_Shutdown();
-            ImGui_ImplSDL3_Shutdown();
-            ImGui::DestroyContext();
-
-            SDL_DestroyRenderer(renderer);
-            SDL_DestroyWindow(window);
-            SDL_Quit();
-            for(auto entity : entities){
-                delete entity;
-            }
-            delete instance;
-        }
-
         static Game *instance;
+
         //SDL Stuff
         int windowHeight = 1280, windowWidth = 1960;
 
@@ -43,7 +36,7 @@ class Game{
         ImFont *font;
 
         // Entities
-        int enemyCount = 1;
+        int enemyCount = 10;
         Player player;
         float bulW, bulH; // the bullet dimensions
         std::vector<Entity *> entities; // non-player entities
@@ -52,14 +45,12 @@ class Game{
         double deltaTime = 0;
         Uint64 lastTick = 0;
 
+        int spacing = 100;
 
+        GameState state =  RUNNING;
 
-        inline static Game *getInstance(){
-            if(instance == 0){
-                instance = new Game;
-            }
-            return instance;
-        }
+        static Game *getInstance();
+        void reset();
         void processEvents(SDL_Event *event);
 
         void update();
@@ -68,4 +59,7 @@ class Game{
         void entityWindow();
 
         void initImGui();
+
+        ~Game();
+        
 };

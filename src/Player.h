@@ -7,6 +7,9 @@
 class Player : public Entity {
     public:
         float bulletSpeed = 2000;
+        float attackSpeed = 25;
+        double lastShot = 1.0 / attackSpeed;
+        
         uint16_t numBullets = 1; // number of bullets per shot
 
         SDL_Texture *tex = nullptr;

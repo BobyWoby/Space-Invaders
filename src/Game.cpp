@@ -33,15 +33,21 @@ void Game::processEvents(SDL_Event *event){
     }
 }
 void Game::detectCollisions(){
-    //detect other collisions
-
-    // delete if the entity is at a wall (unless wall collision is turned off)
     for(int i = entities.size() - 1; i >= 0; i--){
         auto entity  = entities.at(i);
         for(int j = entities.size()-1; j>=0;j--){
-            if(i == j) continue;
+            if(i == j || entity->id == entities.at(j)->id) continue;
+            if(entity->detectCollision(*entities.at(j))){
+                entity->hp -= entities.at(j)->damage;
+            }
         }
+
         entity->move(deltaTime);
+
+        if(entity->id ==  ENEMY && entity->y >= player.y){
+            player.hp -= entity->damage;
+            entity->hp = 0;
+        }
         if(entity->hp <=  0 || (entity->wallCollision && entity->atWall(windowWidth, windowHeight))){
             delete entity;
             entities.erase(entities.begin() + i);
@@ -83,6 +89,7 @@ void Game::render(){
 
 void Game::update()
 {
+    
     Uint64 now = SDL_GetTicks();
     deltaTime = (double)((now - lastTick)) / 1000.0; // seconds
     SDL_Event event;
@@ -97,14 +104,20 @@ void Game::update()
     
     SDL_SetRenderDrawColor(renderer, 0, 0, 0 ,255);
     SDL_RenderClear(renderer);
+
     // render other stuff here
     for(auto entity : entities){
         entity->render(renderer);
     }
 
     player.render(renderer);
-
+    player.lastShot += deltaTime;
+    if(player.hp <= 0){
+        state = LOSE;
+    }
+    
     render();
+
     // update the lastTick
     lastTick = now;
 }
@@ -118,8 +131,18 @@ Game::Game(){
     SDL_ShowWindow(window);
     initImGui();
     player = Player(renderer, 1000.0);
-    for(int i = 0 ; i <  enemyCount;  i++){
-        entities.push_back(new Enemy());
+    reset();
+}
+
+void Game::reset(){
+    for(auto entity : entities){
+        delete entity;
+    }
+    entities.clear();
+    for(int i = 0 ; i < enemyCount;  i++){
+        float x = (windowWidth /  2 + spacing * (i - enemyCount / 2)) % (10 * spacing);
+        float y = 100 + spacing * (int)(i / 10);
+        entities.push_back(new Enemy(x, y));
     }
 }
 
@@ -153,26 +176,49 @@ void Game::initImGui(){
 }
 
 void Game::entityWindow(){
-            static float f = 0.0f;
-            static int counter = 0;
+    static float f = 0.0f;
+    static int counter = 0;
 
-            ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+    ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
 
-            ImGui::Text("Number of NPCs: %zu", entities.size());               // Display some text (you can use a format strings too)
-            ImGui::Checkbox("Demo Window", &showDemo);      // Edit bools storing our window open/close state
-            ImGui::Checkbox("Another Window", &showOtherWindow);
+    ImGui::Text("Player HP: %f", player.hp);               // Display some text (you can use a format strings too)
+    ImGui::Text("Number of NPCs: %zu", entities.size());               // Display some text (you can use a format strings too)
+    ImGui::Checkbox("Demo Window", &showDemo);      // Edit bools storing our window open/close state
+    ImGui::Checkbox("Another Window", &showOtherWindow);
 
-            ImGui::InputInt("Number of enemies", &enemyCount);
-            ImGui::SliderFloat("Player Speed", &player.speed, 0.0f, 10000.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-            // ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
+    ImGui::InputInt("Number of enemies", &enemyCount);
+    ImGui::SliderFloat("Player Speed", &player.speed, 0.0f, 10000.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+    ImGui::SliderFloat("Player Attack Speed", &player.attackSpeed, 0.0f, 100.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+                                                                                             // ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
 
-            if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-                counter++;
-            ImGui::SameLine();
-            ImGui::Text("counter = %d", counter);
+    if (ImGui::Button("Reset"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+        reset();
+    ImGui::SameLine();
+    ImGui::Text("counter = %d", counter);
 
-            ImGui::Text("deltaTime: %f", deltaTime);
-            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io->Framerate, io->Framerate);
-            ImGui::End();
+    ImGui::Text("deltaTime: %f", deltaTime);
+    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io->Framerate, io->Framerate);
+    ImGui::End();
 
+}
+
+Game *Game::getInstance(){
+    if(instance == 0){
+        instance = new Game;
+    }
+    return instance;
+}
+
+Game::~Game(){
+    ImGui_ImplSDLRenderer3_Shutdown();
+    ImGui_ImplSDL3_Shutdown();
+    ImGui::DestroyContext();
+
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
+    for(auto entity : entities){
+        delete entity;
+    }
+    delete instance;
 }

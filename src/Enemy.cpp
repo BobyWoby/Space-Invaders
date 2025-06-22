@@ -1,4 +1,5 @@
 #include  "Enemy.h"
+#include "Entity.h"
 #include "SDL3/SDL_render.h"
 #include "SDL3/SDL_surface.h"
 #include "SDL3_image/SDL_image.h"
@@ -40,6 +41,7 @@ void Enemy::move(float dt){
 }
 
 Enemy::Enemy(){
+    id = ENEMY;
     iX = 700, iY  = 64;
     surface =  IMG_Load("assets/enemy.png");
     if(surface == nullptr){
@@ -47,10 +49,27 @@ Enemy::Enemy(){
     }
     w = surface->w * 2;
     h = surface->h * 2;
-
+    hp = 100;
+    damage = 20;
     damagesPlayer = true;
 }
 
+Enemy::Enemy(float x, float y){
+    iX = x;
+    iY = y;
+    // this->x = x;
+    // this->y = y;
+    id = ENEMY;
+    surface =  IMG_Load("assets/enemy.png");
+    if(surface == nullptr){
+        SDL_Log("Error loading image: %s", SDL_GetError());
+    }
+    w = surface->w * 2;
+    h = surface->h * 2;
+    hp = 100;
+    damage = 20;
+    damagesPlayer = true;
+}
 Enemy::~Enemy(){
     SDL_DestroySurface(surface);
     SDL_DestroyTexture(tex);

@@ -45,19 +45,23 @@ void Player::render(SDL_Renderer *renderer) {
 }
 
 void Player::shoot(std::vector<Entity *> &entities){
-    for(int i = 0; i < numBullets; i++){
-        int xOffset = 2 * (i - (int)(numBullets / 2)) * Bullet::bulletWidth;
-        Bullet *newBullet  = new Bullet(x + xOffset + this->w / 2 - Bullet::bulletWidth / 2 , y, bulletSpeed);
-        entities.push_back(newBullet);
+    if(lastShot >= 1 / attackSpeed){
+        for(int i = 0; i < numBullets; i++){
+            int xOffset = 2 * (i - (int)(numBullets / 2)) * Bullet::bulletWidth;
+            Bullet *newBullet  = new Bullet(x + xOffset + this->w / 2 - Bullet::bulletWidth / 2 , y, bulletSpeed);
+            entities.push_back(newBullet);
+        }
+        lastShot = 0;
     }
 }
 
 Player::Player(){
+    id = PLAYER;
     this->x = 1000;
     this->y = 1000;
     this->w = 50;
     this->h = 50;
-    speed = 1000.0;
+    speed = 5000.0;
 }
 
 void Player::move(float dt, bool left){
